@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.houseok.order.dao.IOrderDao">
+
+	<resultMap type="order" id="orderMapper">
+		<id column="id" property="id"/>
+		<result column="order_state" property="orderState"/>
+		<result column="customer_name" property="customerName"/>
+		<result column="identity_num" property="identityNum"/>
+		<result column="telephone_num" property="telephoneNum"/>
+		<result column="order_number" property="orderNumber"/>
+		<result column="in_time" property="inTime"/>
+		<result column="out_time" property="outTime"/>
+		<result column="creat_time" property="creatTime"/>
+		<result column="change_time" property="changeTime"/>
+		<!-- 多对一关联查询,通过tb_house表的master_id传入selectMasterById进行查询 -->
+		<association property="master" javaType="user" column="master_id" select="selectMasterById">
+			<id column="id" property="id"/>
+			<result column="account" property="account"/>
+			<result column="password" property="password"/>
+			<result column="avatar" property="avatar"/>
+			<result column="sex" property="sex"/>
+			<result column="role" property="role"/>
+			<result column="telephone_num" property="telephoneNum"/>
+			<result column="email" property="email"/>
+			<result column="identity_num" property="identityNum"/>
+			<result column="province" property="province"/>
+			<result column="city" property="city"/>
+			<result column="district" property="district"/>
+			<result column="creat_time" property="creatTime"/>
+			<result column="change_time" property="changeTime"/>
+		</association>
+		<association property="customer" javaType="user" column="master_id" select="selectCustomerById">
+			<id column="id" property="id"/>
+			<result column="account" property="account"/>
+			<result column="password" property="password"/>
+			<result column="avatar" property="avatar"/>
+			<result column="sex" property="sex"/>
+			<result column="role" property="role"/>
+			<result column="telephone_num" property="telephoneNum"/>
+			<result column="email" property="email"/>
+			<result column="identity_num" property="identityNum"/>
+			<result column="province" property="province"/>
+			<result column="city" property="city"/>
+			<result column="district" property="district"/>
+			<result column="creat_time" property="creatTime"/>
+			<result column="change_time" property="changeTime"/>
+		</association>
+		<association property="house" javaType="house" column="house_id" select="selectHouseById">
+			<id column="id" property="id"/>
+		</association>
+	</resultMap>
+	
+	<!-- 查询所有房源 -->
+	<!-- <select id="selectAllHouse" resultMap="houseMapper">
+			select tb_house.id, house_state, house_type, price, position_province, position_city,
+				position_district, position_street, address, house_description, description_img,
+				creat_time, tb_user.id, account, avatar, sex, role, telephone_num, email, province, city,
+				district from tb_house, tb_user where tb_user.id = master_id
+	</select> -->
+	
+	
+	<!-- 连表查询时的子查询：成功 -->
+	<select id="selectMasterById" parameterType="int" resultType="user">
+		select id, account, avatar, sex, role, telephone_num, email, province, city,
+				district from tb_user where id=#{master_id}
+	</select>
+	<!-- 连表查询时的子查询：成功 -->
+	<select id="selectCustomerById" parameterType="int" resultType="user">
+		select id, account, avatar, sex, role, telephone_num, email, province, city,
+				district from tb_user where id=#{user_id}
+	</select>
+	<!-- 连表查询时的子查询：成功 -->
+	<select id="selectHouseById" parameterType="int" resultType="house">
+		select id from tb_house where id=#{house_id}
+	</select>
+	
+	<!-- 通过id查询房源: 测试成功 -->
+	<!-- <select id="selectOrderById" resultMap="houseMapper">
+		select id, master_id, house_state, house_type, price, area, position_province, position_city,
+				position_district, position_street, address, house_description, description_img,
+				creat_time from tb_house where id= #{id}
+	</select> -->
+	
+	<!-- 添加房源:  测试成功 -->
+	<insert id="addnewOrder" >
+		insert into tb_order(user_id, customer_name, master_id, house_id,order_state, order_number,
+			identity_num,telephone_num,creat_time,in_time) 
+			values(#{user.id},#{customerName}, #{master.id}, #{house.id},#{orderState},
+			#{orderNumber}, #{identityNum}, #{telephoneNum},#{creatTime},
+			#{inTime})
+	</insert>
+	
+	<!-- 查询房源总数：测试成功 -->
+	<!-- <select id="selectTotalHouseRecord" resultType="int">
+		select count(*) from tb_house
+	</select> -->
+	
+	
+	
+	<!-- 删除房源 -->
+	<!-- <delete id="deleteHouseById">
+		delete from tb_house where id=#{id}
+	</delete>
+	 -->
+	<!-- 更新房屋状态 -->
+	<!-- <update id="updateHouseState">
+		update tb_house set house_state=#{1} where id=#{0}
+	</update> -->
+	
+</mapper>

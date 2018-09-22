@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"    
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+    xmlns:p="http://www.springframework.org/schema/p"  
+    xmlns:aop="http://www.springframework.org/schema/aop"   
+    xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:jee="http://www.springframework.org/schema/jee"  
+    xmlns:tx="http://www.springframework.org/schema/tx"  
+    xmlns:task="http://www.springframework.org/schema/task" 
+    xsi:schemaLocation="    
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd  
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd  
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd  
+        http://www.springframework.org/schema/task  http://www.springframework.org/schema/task/spring-task.xsd  
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd" >    
+		
+		<!-- 开启基于注解的DI,这里后面多层包用几个星号？ -->
+		<context:component-scan base-package="com.houseok.*" />
+		
+		<!-- 注册连接数据库属性文件 -->
+		<context:property-placeholder location="classpath:mysql.properties"/>
+		
+		<!-- 配置C3P0数据源 -->
+		<bean id="dataSource" class ="com.mchange.v2.c3p0.ComboPooledDataSource">
+			<property name="driverClass" value="${jdbc.driver}"/>
+			<property name="jdbcUrl" value="${jdbc.url}"/>
+			<property name="user" value = "${jdbc.username}"/>
+			<property name="password" value="${jdbc.password}"/>
+		</bean>
+		<!-- <bean id="dataSource" class ="com.mchange.v2.c3p0.ComboPooledDataSource">
+			<property name="driverClass" value="com.mysql.jdbc.Driver"/>
+			<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/db_house_project"/>
+			<property name="user" value = "root"/>
+			<property name="password" value="root"/>
+		</bean> -->
+		
+		<!-- 注册sqlsessionfactory:将mybatis的SqlSessionFactory(重量对象)交给spring容器管理 -->
+		<bean id = "sqlSessionFactory" class = "org.mybatis.spring.SqlSessionFactoryBean">
+			<!-- sqlsessionFactory通过mybatis著配置文件加载 :这里使用classpath-->
+			<property name="configLocation" value="classpath:mybatis.xml"/>
+			<property name="dataSource" ref="dataSource"/>
+		</bean>
+		
+		<!-- 加入mybatis动态代理的扫描给指定包下接口和mapper文件指定动态代理对象 -->		
+		<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+				<!-- 注入sqlsessionfactory -->
+				<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+				<!-- 指定要生成的代理包 -->
+				<property name="basePackage" value="com.houseok.*.dao"/>
+		</bean>
+        
+</beans>

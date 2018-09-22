@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>    
+<beans xmlns="http://www.springframework.org/schema/beans"    
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+    xmlns:p="http://www.springframework.org/schema/p"  
+    xmlns:aop="http://www.springframework.org/schema/aop"   
+    xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:jee="http://www.springframework.org/schema/jee"  
+    xmlns:tx="http://www.springframework.org/schema/tx"  
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="    
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd  
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+        http://www.springframework.org/schema/mvc   http://www.springframework.org/schema/mvc/spring-mvc.xsd 
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd  
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd  
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd" >    
+	<mvc:annotation-driven/>
+	
+	<!-- 使用注解的包，包括子集:开启注解自动扫描 -->
+	<context:component-scan base-package="com.houseok.*.controller" />
+	
+	<!-- 默认配置处理静态资源 -->
+	<mvc:default-servlet-handler/>
+	
+	<!-- <mvc:resources mapping="/static/**" location="/static/" /> -->
+	
+	<!-- 配置默认视图解析器：把逻辑视图名拼接转化为真实的物理视图名 -->
+	<bean id ="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<!-- 配置XMLViewResolver -->
+	<!-- <bean	class="org.springframework.web.servlet.view.XmlViewResolver">
+			<property name="location" value="classpath:spring/spring-views.xml"/>
+			配置视图解析器优先级
+			<property name="order" value="1"/>
+	</bean> -->
+	
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="102400000" />
+     	<property name="defaultEncoding" value="UTF-8"></property>
+	</bean>
+	
+	
+</beans>  

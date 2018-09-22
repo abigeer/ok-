@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.houseok.user.dao.IUserDao">
+
+	<resultMap type="user" id="userMapper">
+		<id column="id" property="id"/>
+		<result column="account" property="account"/>
+		<result column="password" property="password"/>
+		<result column="avatar" property="avatar"/>
+		<result column="sex" property="sex"/>
+		<result column="role" property="role"/>
+		<result column="telephone_num" property="telephoneNum"/>
+		<result column="email" property="email"/>
+		<result column="identity_num" property="identityNum"/>
+		<result column="province" property="province"/>
+		<result column="city" property="city"/>
+		<result column="district" property="district"/>
+		<result column="creat_time" property="creatTime"/>
+		<result column="change_time" property="changeTime"/>
+	</resultMap>
+	
+	<!-- mysql插入语句中的字段按顺序写吗？：测试成功 -->
+	<insert id="creatNewUser">
+		insert into tb_user (account, password, role, email, province, city, creat_time, avatar, sex)
+		 values (#{account}, #{password}, #{role}, #{email}, #{province}, #{city}, #{creatTime}, #{avatar}, #{sex})
+		 <selectKey resultType="int" keyProperty="id">
+		 	select @@identity
+		 </selectKey>
+	</insert>
+	
+	<!-- 测试成功 -->
+	<select id="selectUserByAccount" resultMap="userMapper" parameterType="user">
+		select id,account,password,role, province, telephone_num, identity_num, avatar from tb_user where account = #{account}
+	</select>
+	
+	<!-- 通过id查询用户： -->
+	<select id="selectUserById" resultMap="userMapper" parameterType="int">
+		select id, password, account, role, province, city, district, telephone_num, email, identity_num, avatar from tb_user where id = #{userId}
+	</select>
+	
+	<update id="updateUser">
+		update tb_user set avatar = #{avatar}, telephone_num = #{telephoneNum},
+		 email = #{email}, identity_num = #{identityNum}, province = #{province},
+		 city = #{city}, district = #{district}, change_time = #{changeTime} where id = #{id}
+	</update>
+	
+	<!-- 测试成功 -->
+	<update id="updateUserToMaster">
+		update tb_user set telephone_num = #{telephoneNum},email=#{email}, identity_num = #{identityNum},
+		province = #{province}, city = #{city}, district=#{district}, role = "master", change_time=#{changeTime} where id = #{id}
+	</update>
+	
+	<!-- 修改密码: 测试成功 -->
+	<update id="changePassword">
+		update tb_user set password = #{0} where account=#{1}
+	</update>
+	
+	<!-- 用户修改头像 -->
+	<update id="updateHeader">
+		update tb_user set avatar = #{0} where account=#{1}
+	</update>
+	
+	<!-- 查询用户总数 -->
+	<select id="selectTotalUser" resultType="int">
+		select count(*) from tb_user
+	</select>
+	
+	<!-- 查询所有用户 -->
+	<select id="selectAllUser" resultMap="userMapper">
+		select id, account, role,email, telephone_num, province, city, creat_time from tb_user limit #{0},#{1}
+	</select>
+
+</mapper>

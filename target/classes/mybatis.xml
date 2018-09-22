@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+		<!-- defaultExecutorType设置为BATCH有个缺陷就是
+			无法获取update、delete返回的行数,修改成SIMPLE
+			即可 -->
+        <setting name="defaultExecutorType" value="SIMPLE" />
+	</settings>
+
+	<!-- bean定义别名：简单类名做别名 -->
+	<typeAliases>
+		<package name="com.houseok.bean"/>
+	</typeAliases>
+	<!-- 给mapper文件映射对应的dao接口 -->
+	<mappers>
+		<!-- 这里不能配置*？ -->
+		<package name="com.houseok.*.dao"/>
+	</mappers>
+</configuration>

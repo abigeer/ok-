@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"    
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+    xmlns:p="http://www.springframework.org/schema/p"  
+    xmlns:aop="http://www.springframework.org/schema/aop"   
+    xmlns:context="http://www.springframework.org/schema/context"  
+    xmlns:jee="http://www.springframework.org/schema/jee"  
+    xmlns:tx="http://www.springframework.org/schema/tx"  
+    xmlns:task="http://www.springframework.org/schema/task" 
+    xsi:schemaLocation="    
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd  
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd  
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd  
+        http://www.springframework.org/schema/task  http://www.springframework.org/schema/task/spring-task.xsd  
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd" >    
+		
+		<!-- 配置realm -->
+		<bean id="userRealm" class="com.houseok.user.realm.UserRealm">
+				<property name="authenticationTokenClass" value="com.houseok.shiro.UserToken"/>
+				<property name="credentialsMatcher">
+						<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+								<property name="hashAlgorithmName" value="MD5"/>
+								<property name="hashIterations" value="1024"/>
+						</bean>
+				</property>
+		</bean>
+		
+		<!-- 配置shiro -->
+		<!-- 配置SecurityManager -->
+		<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+				<property name="realms">
+						<list>
+							<ref bean="userRealm"/>
+						</list>
+				</property>
+		</bean>
+		
+		<!-- 配置 LifecycleBeanPostProcessor. 可以自定的来调用配置
+		在 Spring IOC 容器中 shiro bean 的生命周期方法. -->
+		<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+		
+		<!-- 开启shiro注解，要配置lifecyBeanpostprocessor -->
+		<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+				depends-on="lifecycleBeanPostProcessor"/>
+		<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+				<property name="securityManager" ref="securityManager"/>
+		</bean>
+		
+		<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+	        <property name="securityManager" ref="securityManager"/>
+	        <property name="loginUrl" value="/login.jsp"/>
+	        <property name="successUrl" value="/list.jsp"/>
+	        <property name="unauthorizedUrl" value="/unauthorized.jsp"/>
+	        
+	        
+	        <!--  
+	        	配置哪些页面需要受保护. 
+	        	以及访问这些页面需要的权限. 
+	        	1). anon 可以被匿名访问
+	        	2). authc 必须认证(即登录)后才可能访问的页面. 
+	        	3). logout 登出.
+	        	4). roles 角色过滤器
+	        -->
+	        <property name="filterChainDefinitions">
+	            <value>
+	                /** = anon
+	                /WEB-INF/views/houseSource.jsp = authc
+	            </value>
+	        </property>
+	    </bean>
+        
+</beans>
